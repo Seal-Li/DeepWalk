@@ -6,11 +6,11 @@ class DeepWalk(torch.nn.Module):
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.dims = dims
         self.numNodes = numNodes
-        self.embeddings = torch.nn.Embedding(numNodes+1, dims).to(self.device)
+        self.embedding = torch.nn.Embedding(numNodes+1, dims).to(self.device)
 
     def forward(self, srcs, dsts):
-        srcs_embedding = self.embeddings(srcs.int())
-        dsts_embedding = self.embeddings(dsts.int())
+        srcs_embedding = self.embedding(srcs.int())
+        dsts_embedding = self.embedding(dsts.int())
         return srcs_embedding, dsts_embedding
     
     def loss(self, srcs_embedding, dsts_embedding, labels):
@@ -23,7 +23,7 @@ class DeepWalk(torch.nn.Module):
         node_ids = torch.arange(self.numNodes + 1)
         with open("./embeddings.txt", "w+") as f:
             for node_id in node_ids:
-                node_vector = self.embeddings(node_id).to("cpu").tolist()
+                node_vector = self.embedding(node_id).to("cpu").tolist()
                 vector = " ".join(list(map(lambda vec: str(vec), node_vector)))
                 f.write(f"{node_id} {vector}\n")
         return None

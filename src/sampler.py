@@ -1,17 +1,20 @@
-from operator import pos
 import torch
 from walk import Walk
 
 class Sampler(object):
-    def __init__(self, g, numWalks, walkLength, windowSize, sampleWeights, numNegative):
+    """ defined an base Sampler
+    """
+    def __init__(self, g, numWalks, walkLength, windowSize, degrees, numNegative):
         self.g = g
         self.numWalks = numWalks
         self.walkLength = walkLength
         self.windowSize = windowSize
         self.numNegative = numNegative
-        self.sampleWeights = sampleWeights
+        self.sampleWeights = [max(degrees) - degree for degree in degrees]
     
     def sample(self, nodes):
+        """get training samples
+        """
         positive_pairs = self.positive_sample(nodes)
         negative_pairs = self.negative_sample(positive_pairs)
         srcs, dsts, labels = [], [], []
@@ -23,8 +26,8 @@ class Sampler(object):
         return torch.tensor(srcs), torch.tensor(dsts), torch.tensor(labels)
     
     def positive_sample(self, nodes):
-
-        # TODO: problem is here
+        """ generate positive pairs
+        """
         traces = Walk(
             nodes,
             self.g.graph,
@@ -40,16 +43,21 @@ class Sampler(object):
                 right = min(len(trace), i + self.windowSize + 1)
                 positive_pairs.extend(
                     [[center, x, 1]
-                     for x in trace[left:i]]
+                    for x in trace[left:i]]
                 )
                 positive_pairs.extend(
                     [[center, x, 1]
-                     for x in trace[i+1:right]]
+                    for x in trace[i+1:right]]
                 )
         return positive_pairs
     
     def negative_sample(self, positive_pairs):
-        negative_srcs = [positive_pair[0] for positive_pair in positive_pairs] * self.numNegative
+        """generate negative pairs
+        """
+        negative_srcs = [
+            positive_pair[0] 
+            for positive_pair in positive_pairs
+        ] * self.numNegative
         negative_dsts = torch.multinomial(
             torch.tensor(self.sampleWeights).float(),
             int(len(positive_pairs) * self.numNegative),

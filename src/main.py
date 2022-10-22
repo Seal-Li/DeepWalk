@@ -1,4 +1,3 @@
-from pyro import sample
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
@@ -6,9 +5,10 @@ from sklearn import metrics
 from graph import Graph
 from model import DeepWalk
 from sampler import Sampler
-from utils import arg_parser
+import utils
+import random
 
-def train(args, g):
+def train(args, g, testEdges):
     sampler = Sampler(
         g, 
         args.numWalks, 
@@ -44,19 +44,30 @@ def train(args, g):
             if step % args.logStep == 0:
                 print('Epoch {:05d} | Step {:05d} | Step Loss {:.4f} | Epoch Avg Loss: {:.4f}'\
                     .format(epoch, step, loss.item(), epoch_total_loss / (step + 1)))
+        evaluate(model, testEdges, g)
         if (epoch + 1) % args.shrinkStep == 0:
             scheduler.step()
     return model
 
-def evaluate(testEdges, model):
-    
+def evaluate(model, testEdges, g):
+    labels = testEdges[-1]
+    srcs, dsts = g.node_encoder(testEdges[0], testEdges[1])
+    srcs_embedding = model.embedding(torch.tensor(srcs))
+    dsts_embedding = model.embedding(torch.tensor(dsts))
+    # print(srcs_embedding)
+    preds = torch.sigmoid(torch.sum(srcs_embedding * dsts_embedding, dim=1))\
+        .cpu().detach().numpy().tolist()
+    fpr, tpr, _ = metrics.roc_curve(labels, preds, pos_label=1)
+    print("Evaluate link prediction AUC: {:.4f}".format(metrics.auc(fpr, tpr)))
     return None
 
-
 if __name__ == "__main__":
-    args = arg_parser()
+    args = utils.arg_parser()
     g = Graph()
-    graph = g.random_graph(2000, 20000, direction=True)
-    model = train(args, g)
-    model.save_embeddings()
-    torch.save(model, "./model.pt")
+    trainEdges = utils.load_train_edges(args.path)
+    testEdges = utils.load_test_edges(args.path)
+    graph = g.construct_graph(trainEdges[0], trainEdges[1])
+    testEdges[0], testEdges[1] = g.encoder_new_edges(testEdges[0], testEdges[1])
+    model = train(args, g, testEdges)
+    # model.save_embeddings()
+    # torch.save(model, "./model.pt")

@@ -32,8 +32,8 @@ class Graph(object):
     def random_graph(self, numNodes=1000, numEdges=10000, direction=False):
         """ get a graph example, default is undirected graph 
         """
-        srcs = [randint(1, numNodes) for _ in range(numEdges)]
-        dsts = [randint(1, numNodes) for _ in range(numEdges)]
+        srcs = [str(randint(1, numNodes)) for _ in range(numEdges)]
+        dsts = [str(randint(1, numNodes)) for _ in range(numEdges)]
         srcs, dsts = self.node_encoder(srcs, dsts)
         nodes = set()
         if direction:
@@ -72,7 +72,7 @@ class Graph(object):
     def num_nodes(self):
         """return nodes number of graph
         """
-        return len(self.encoder)
+        return len(self.nodes)
 
     def num_edges(self):
         """return edges number of graph
@@ -96,12 +96,3 @@ class Graph(object):
             encoder_srcs.append(self.encoder[src])
             encoder_dsts.append(self.encoder[dst])
         return encoder_srcs, encoder_dsts
-
-
-if __name__ == "__main__":
-    Graph = Graph()
-    # graph = Graph.random_graph(numNodes=1000, numEdges=10000)
-    srcs = [randint(1, 100) for _ in range(500)]
-    dsts = [randint(1, 100) for _ in range(500)]
-    graph = Graph.construct_graph(srcs, dsts)
-    print(graph)

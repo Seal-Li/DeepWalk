@@ -6,7 +6,8 @@ from graph import Graph
 from model import DeepWalk
 from sampler import Sampler
 import utils
-import random
+import torch.nn.functional as F
+from tqdm import tqdm
 
 def train(args, g, testEdges):
     sampler = Sampler(
@@ -51,7 +52,7 @@ def train(args, g, testEdges):
 
 def evaluate(model, testEdges, g):
     labels = testEdges[-1]
-    srcs, dsts = g.node_encoder(testEdges[0], testEdges[1])
+    srcs, dsts = testEdges[0], testEdges[1]
     srcs_embedding = model.embedding(torch.tensor(srcs))
     dsts_embedding = model.embedding(torch.tensor(dsts))
     # print(srcs_embedding)
@@ -69,5 +70,5 @@ if __name__ == "__main__":
     graph = g.construct_graph(trainEdges[0], trainEdges[1])
     testEdges[0], testEdges[1] = g.encoder_new_edges(testEdges[0], testEdges[1])
     model = train(args, g, testEdges)
-    # model.save_embeddings()
-    # torch.save(model, "./model.pt")
+    model.save_embeddings()
+    torch.save(model, "./model.pt")

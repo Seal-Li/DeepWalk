@@ -1,5 +1,6 @@
 import random
 
+
 class Walk(object):
     """defined an base walk class 
     """
@@ -8,6 +9,7 @@ class Walk(object):
         self.graph = graph
         self.walks = numWalks
         self.length = walkLength
+
 
     def walk(self):
         """generate walk trace for each node

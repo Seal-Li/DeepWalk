@@ -1,6 +1,7 @@
 import torch
 from walk import Walk
 
+
 class Sampler(object):
     """ defined an base Sampler
     """
@@ -11,7 +12,8 @@ class Sampler(object):
         self.windowSize = windowSize
         self.numNegative = numNegative
         self.sampleWeights = [max(degrees) - degree for degree in degrees]
-    
+
+
     def sample(self, nodes):
         """get training samples
         """
@@ -24,7 +26,8 @@ class Sampler(object):
             dsts.append(int(dst))
             labels.append(int(label))
         return torch.tensor(srcs), torch.tensor(dsts), torch.tensor(labels)
-    
+
+
     def positive_sample(self, nodes):
         """ generate positive pairs
         """
@@ -50,7 +53,8 @@ class Sampler(object):
                     for x in trace[i+1:right]]
                 )
         return positive_pairs
-    
+
+
     def negative_sample(self, positive_pairs):
         """generate negative pairs
         """

@@ -11,6 +11,7 @@ class Graph(object):
         self.encoder = {}
         self.decoder = {}
 
+
     def construct_graph(self, srcs, dsts, direction=False):
         """construct a graph with your dataset,
         if set direction is True, you will get a directed graph
@@ -28,6 +29,7 @@ class Graph(object):
                 nodes.update({src, dst})
         self.nodes = list(nodes)
         return self.graph
+
 
     def random_graph(self, numNodes=1000, numEdges=10000, direction=False):
         """ get a graph example, default is undirected graph 
@@ -47,6 +49,7 @@ class Graph(object):
                 nodes.update({src, dst})
         self.nodes = list(nodes)
         return self.graph
+
 
     def node_encoder(self, srcs, dsts):
         """set graph node with new id, start from 1, not 0 
@@ -69,27 +72,32 @@ class Graph(object):
         dsts = [self.encoder[dst] for dst in dsts]
         return srcs, dsts
 
+
     def num_nodes(self):
         """return nodes number of graph
         """
         return len(self.nodes)
+
 
     def num_edges(self):
         """return edges number of graph
         """
         return sum(len(value) for _, value in self.graph.items())
 
+
     def degrees(self):
         """return out degrees of graph nodes
         """
         return [len(self.graph[i]) for i in range(1, len(self.graph.items()) + 1)]
-    
+
+
     def node_type(self, nodeTypeDict):
         """record nodes type for heterogeneous graph,
         the function will transform node id from original id to encoder id
         """
         return {self.encoder[key]: value for key, value in nodeTypeDict.items()}
-    
+
+
     def encoder_new_edges(self, srcs, dsts):
         encoder_srcs, encoder_dsts = [], []
         for src, dst in zip(srcs, dsts):

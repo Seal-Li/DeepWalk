@@ -1,5 +1,6 @@
 import argparse
 
+
 def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--path", type=str, default="C:/Users/lihai/Desktop/paper and code/DeepWalk/DeepWalk")
@@ -16,6 +17,7 @@ def arg_parser():
     parser.add_argument("--logStep", type=int, default=100)
     return parser.parse_args()
 
+
 def load_train_edges(path):
     srcs, dsts = [], []
     with open(f"{path}/data/train_edges.txt", "r") as f:
@@ -24,6 +26,7 @@ def load_train_edges(path):
             srcs.append(edge[0])
             dsts.append(edge[1])
     return [srcs, dsts]
+
 
 def load_test_edges(path):
     srcs, dsts, labels = [], [], []
@@ -34,6 +37,7 @@ def load_test_edges(path):
             dsts.append(edge[1])
             labels.append(int(edge[2]))
     return [srcs, dsts, labels]
+
 
 def load_nodes_type(path):
     node_type = {}

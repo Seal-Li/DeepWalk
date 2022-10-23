@@ -1,5 +1,6 @@
 import torch
 
+
 class DeepWalk(torch.nn.Module):
     def __init__(self, dims, numNodes):
         super(DeepWalk, self).__init__()

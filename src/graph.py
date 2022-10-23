@@ -61,7 +61,12 @@ class Graph(object):
                 node_count[node] += 1
             else:
                 node_count[node] = 0
-        count_sort = sorted(node_count.items(), key=lambda x:x[1], reverse=True)
+
+        count_sort = sorted(
+            node_count.items(),
+            key=lambda x:x[1],
+            reverse=True
+        )
 
         for index, element in enumerate(count_sort):
             node_id = index + 1
